@@ -72,6 +72,11 @@ export default {
         body: JSON.stringify({
           page: this.page,
         }),
+      })
+      .then((response) => {
+          if (response.status === 401) {
+            this.$router.push({ name: "Login" });
+          }
       });
     },
     clickPage() {
@@ -100,7 +105,7 @@ export default {
         });
     },
     swipe(direction) {
-      alert(direction);
+      console.log(direction);
     },
   },
   mounted() {
