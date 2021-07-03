@@ -1,24 +1,22 @@
 <template>
   <div class="read">
     <input @keyup.enter="test('second input', $event)" />
-    <v-container fluid v-touch="{
-          left: () => swipe('Left'),
-          right: () => swipe('Right'),
-          up: () => swipe('Up'),
-          down: () => swipe('Down'),
-        }" >
-      <v-row
-        class="text-center"
-        
-      >
+    <v-container
+      fluid
+      v-touch="{
+        left: () => swipe('Left'),
+        right: () => swipe('Right'),
+        up: () => swipe('Up'),
+        down: () => swipe('Down'),
+      }"
+    >
+      <v-row class="text-center">
         <v-col cols="12">
           <v-img
-          @click="clickPage"
-          class="lighten-2"
+            @click="clickPage"
+            class="lighten-2"
             contain
-            v-bind:src="
-              full_address + this.username + '/' + this.page
-            "
+            v-bind:src="full_address + this.username + '/' + this.page"
           />
         </v-col>
       </v-row>
@@ -31,7 +29,6 @@
 </template>
 
 <script>
-
 import config from "../../config.json";
 // @ is an alias to /src
 export default {
@@ -39,7 +36,7 @@ export default {
   components: {},
   data() {
     return {
-      full_address: config.daemon_address + ':' + config.daemon_port + '/',
+      full_address: config.daemon_address + ":" + config.daemon_port + "/",
       page: "00",
       page_int: 0,
       username: "",
@@ -48,20 +45,20 @@ export default {
   methods: {
     nextItem() {
       if (event.keyCode === 37) {
-        this.changePage('-');
+        this.changePage("-");
       }
       if (event.keyCode === 39) {
-        this.changePage('+');
+        this.changePage("+");
       }
     },
     changePage(sign) {
-      if(sign === '+' && this.page_int < 999){
+      if (sign === "+" && this.page_int < 999) {
         this.page_int++;
-      } else if (sign === '-' && this.page_int > 0){
+      } else if (sign === "-" && this.page_int > 0) {
         this.page_int--;
       }
       this.page = this.page_int < 10 ? "0" + this.page_int : this.page_int;
-      scroll(0,0)
+      scroll(0, 0);
       fetch(this.full_address + "volume/changePage", {
         mode: "cors",
         headers: {
@@ -72,15 +69,14 @@ export default {
         body: JSON.stringify({
           page: this.page,
         }),
-      })
-      .then((response) => {
-          if (response.status === 401) {
-            this.$router.push({ name: "Login" });
-          }
+      }).then((response) => {
+        if (response.status === 401) {
+          this.$router.push({ name: "Login" });
+        }
       });
     },
     clickPage() {
-      this.changePage('+')
+      this.changePage("+");
     },
     me() {
       fetch(this.full_address + "auth/me", {
@@ -91,7 +87,13 @@ export default {
         },
         method: "GET",
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status === 401) {
+            this.$router.push({ name: "Login" });
+          }else{
+            return response.json();
+          }
+        })
         .then((me) => {
           this.username = me.username;
           if (
